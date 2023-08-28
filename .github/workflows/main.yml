@@ -1,29 +1,25 @@
-#  AWS_ACCESS_KEY_ID,  AWS_SECRET_ACCESS_KEY,  AWS_S3_BUCKET,  DISTRIBUTION 필요
-
 name: my-front
- # main브런치에 push 발생하면 jobs실행
 on:
   push:
-    branches:  
+    branches:
       - main
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:  #환경변수
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: 'ap-northeast-2'
 
     steps:
       - name: Checkout source code.
         uses: actions/checkout@master
 
-      - name: Upload binary to S3 bucket
-        uses: jakejarvis/s3-sync-action@master
+      - name: Deploy
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          args: --acl public-read --exclude '*' --include 'index.html'
-        env:
-          AWS_S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         AWS_REGION: 'ap-northeast-2'
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 --acl private ./index.html s3://awsdeploybucket/
 
       - name: Invalidate cache CloudFront
         uses: chetan/invalidate-cloudfront-action@master
