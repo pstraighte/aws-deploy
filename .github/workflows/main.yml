@@ -18,7 +18,7 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 --acl private ./index.html s3://awsdeploybucket/
+        run: aws s3 cp --region ap-northeast-2 --acl private ./index.html s3://willu-bucket/
 
       - name: Invalidate cache CloudFront
         uses: chetan/invalidate-cloudfront-action@master
